@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 
 import { AuthService } from './auth.service';
 import { Store } from '@ngrx/store';
+import { getMaskUserName } from "./state/user.reducer";
 
 @Component({
   templateUrl: './login.component.html',
@@ -21,11 +22,9 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.store.select('users').subscribe(data => {
-      if (data) {
-        this.maskUserName = data.maskUserName;
-      }
-    });
+    this.store.select(getMaskUserName).subscribe(
+      maskUserName => this.maskUserName = maskUserName
+    );
   }
 
   cancel(): void {
@@ -34,7 +33,7 @@ export class LoginComponent implements OnInit {
 
   checkChanged(): void {
     this.store.dispatch(
-      { type: '[User] Mask Username' }
+      {type: '[User] Mask Username'}
     );
   }
 
