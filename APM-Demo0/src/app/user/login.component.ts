@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import * as UserActions from './state/user.actions';
 
 import { AuthService } from './auth.service';
 import { Store } from '@ngrx/store';
-import { getMaskUserName } from "./state/user.reducer";
+import { getMaskUserName, State } from './state/user.reducer';
+
 
 @Component({
   templateUrl: './login.component.html',
@@ -17,7 +19,7 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private authService: AuthService, private router: Router,
-    private store: Store<any>
+    private store: Store<State>
   ) {
   }
 
@@ -32,9 +34,7 @@ export class LoginComponent implements OnInit {
   }
 
   checkChanged(): void {
-    this.store.dispatch(
-      {type: '[User] Mask Username'}
-    );
+    this.store.dispatch(UserActions.maskUserName());
   }
 
   login(loginForm: NgForm): void {
@@ -42,6 +42,8 @@ export class LoginComponent implements OnInit {
       const userName = loginForm.form.value.userName;
       const password = loginForm.form.value.password;
       this.authService.login(userName, password);
+
+      this.store.dispatch(UserActions.setCurrentUser({ user: { userName, isAdmin: false, id: 0 } }));
 
       if (this.authService.redirectUrl) {
         this.router.navigateByUrl(this.authService.redirectUrl);

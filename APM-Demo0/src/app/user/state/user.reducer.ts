@@ -1,5 +1,6 @@
-import { createAction, createFeatureSelector, createReducer, createSelector, on } from '@ngrx/store';
+import { createFeatureSelector, createReducer, createSelector, on } from '@ngrx/store';
 import * as AppState from '../../state/app.state';
+import * as UserActions from './user.actions';
 import { User } from '../user';
 
 export interface State extends AppState.State {
@@ -28,14 +29,35 @@ export const getCurrentUser = createSelector(
   state => state.currentUser
 );
 
-
 export const userReducer = createReducer<UserState>(
   initialState,
-  on(createAction('[User] Mask Username'), (state): UserState => {
+  on(UserActions.maskUserName, (state): UserState => {
     console.log('Original State of MaskUsername : ' + JSON.stringify(state));
     return {
       ...state,
       maskUserName: !state.maskUserName
+    };
+  }),
+  on(UserActions.setCurrentUser, (state, action): UserState => {
+    return {
+      ...state,
+      currentUser: action.user
+    };
+  }),
+  on(UserActions.clearCurrentUser, (state): UserState => {
+    return {
+      ...state,
+      currentUser: null
+    };
+  }),
+  on(UserActions.createNewUser, (state): UserState => {
+    return {
+      ...state,
+      currentUser: {
+        id: 0,
+        userName: 'New User Name',
+        isAdmin: false
+      }
     };
   })
 );
