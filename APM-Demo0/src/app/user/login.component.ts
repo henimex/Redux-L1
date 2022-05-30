@@ -22,9 +22,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.select('users').subscribe(data => {
-      console.log(data);
       if (data) {
-        console.log(data.maskUserName);
         this.maskUserName = data.maskUserName;
       }
     });
@@ -36,7 +34,7 @@ export class LoginComponent implements OnInit {
 
   checkChanged(): void {
     this.store.dispatch(
-      { type: '[User] Toggle Mask Username' }
+      { type: '[User] Mask Username' }
     );
   }
 

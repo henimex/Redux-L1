@@ -39,7 +39,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
     this.store.select('products').subscribe(
       data => {
-        console.log(data);
         if (data) {
           this.displayCode = data.showProductCode;
         }
