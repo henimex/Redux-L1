@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import * as ProductActions from '../state/product.actions';
-
 import { Product } from '../product';
-import { ProductService } from '../product.service';
 import { Store } from '@ngrx/store';
-import { getCurrentProduct, getShowProductCode, State } from '../state/product.reducer';
+import { getCurrentProduct, getError, getProducts, getShowProductCode, State } from '../state/product.reducer';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'pm-product-list',
@@ -12,34 +11,23 @@ import { getCurrentProduct, getShowProductCode, State } from '../state/product.r
   styleUrls: ['./product-list.component.css']
 })
 export class ProductListComponent implements OnInit {
+
   pageTitle = 'Products';
-  errorMessage: string;
-
-  displayCode: boolean;
-
-  products: Product[];
-
-  // Used to highlight the selected product in the list
-  selectedProduct: Product | null;
+  products: Observable<Product[]>;
+  selectedProduct: Observable<Product>;
+  displayCode: Observable<boolean>;
+  errorMessage: Observable<string>;
 
   constructor(
-    private store: Store<State>,
-    private productService: ProductService) {
+    private store: Store<State>) {
   }
 
   ngOnInit(): void {
-    this.store.select(getCurrentProduct).subscribe(
-      currentProduct => this.selectedProduct = currentProduct
-    );
-
-    this.productService.getProducts().subscribe({
-      next: (products: Product[]) => this.products = products,
-      error: err => this.errorMessage = err
-    });
-
-    this.store.select(getShowProductCode).subscribe(
-      showProductCode => this.displayCode = showProductCode
-    );
+    this.products  = this.store.select(getProducts);
+    this.store.dispatch(ProductActions.loadProducts());
+    this.selectedProduct = this.store.select(getCurrentProduct);
+    this.displayCode = this.store.select(getShowProductCode);
+    this.errorMessage = this.store.select(getError);
   }
 
   checkChanged(): void {
@@ -47,13 +35,10 @@ export class ProductListComponent implements OnInit {
   }
 
   newProduct(): void {
-    // this.productService.changeSelectedProduct(this.productService.newProduct());
-
     this.store.dispatch(ProductActions.initializeCurrentProduct());
   }
 
   productSelected(product: Product): void {
-    this.store.dispatch(ProductActions.setCurrentProduct({ product }));
+    this.store.dispatch(ProductActions.setCurrentProduct({product}));
   }
-
 }
