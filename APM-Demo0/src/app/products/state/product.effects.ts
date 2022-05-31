@@ -14,12 +14,10 @@ export class ProductEffects {
   loadProducts = createEffect(() => {
     return this.actions.pipe(
       ofType(ProductActions.loadProducts),
-      mergeMap(() = this.productService.getProducts().pipe(
+      mergeMap(() => this.productService.getProducts().pipe(
         map(products => ProductActions.loadProductsSuccess({ products }))
       ))
     );
   });
 }
 
-// Repeat on Chepter 8 L4
-// https://app.pluralsight.com/course-player?clipId=8974b8da-5ae1-4334-a7cc-247956813ea3
